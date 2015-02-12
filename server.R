@@ -15,8 +15,16 @@ shinyServer(function(input, output) {
       user <- input$user
       password <- input$password
       limits <- reactive({
-        limits <- request("https://api.github.com/rate_limit", user, password)
-        data.frame(unlist(fromJSON(content(limits, "text"))))
+        limits <- fromJSON(content(request("https://api.github.com/rate_limit", user, password), "text"))
+        df <- data.frame(
+          Limit     = c(limits$resources$core$limit, limits$resources$search$limit),
+          Remaining = c(limits$resources$core$remaining, limits$resources$search$remaining),
+          Reset     = c(as.POSIXct(limits$resources$core$reset, origin = "1970-01-01"),
+                        as.POSIXct(limits$resources$search$reset, origin = "1970-01-01"))
+        )
+        df <- data.frame(t(df))
+        names(df) <- c("Core", "Search")
+        df
       })
       output$limits <- renderTable(limits())
     })
