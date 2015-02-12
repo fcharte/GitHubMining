@@ -11,7 +11,8 @@ shinyUI(fluidPage(
       hr(),
       h3("Github user account"),
       textInput("user", label = h5("User name")),
-      textInput("password", label = h5("Password"))
+      h5("Password"),
+      tags$input(id="password", type="password", placeholder="Password", class="form-control shiny-bound-input")
     ),
 
     mainPanel(
