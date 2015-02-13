@@ -35,8 +35,8 @@ shinyServer(function(input, output) {
   })
 
   observe({
-    if(input$search != 0) isolate({
-      users <- reactive({
+    input$search
+    users <- isolate({
         if(input$location == "") return()
 
         url <- paste("https://api.github.com/search/users?q=+location:", input$location, "&per_page=100", sep = "")
@@ -45,8 +45,7 @@ shinyServer(function(input, output) {
         names(df) <- names(data$items[[1]])
         df[, c(1, 5, 16)]
       })
-      output$users <- renderTable(users())
-    })
+      output$users <- renderTable(users)
   })
 
 })
