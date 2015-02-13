@@ -55,7 +55,17 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <div id="githubmining" class="section level1">
 <h1>GitHubMining</h1>
 <p>A shiny tool for mining GitHub data</p>
-<p>You can run this application from your R console or RStudio by installing the <code>shiny</code> package and then entering <code>runGitHub('GitHubMining', 'fcharte')</code></p>
+<p>You can run this application from your R console or RStudio by installing the <code>shiny</code> package and then entering <code>runGitHub('GitHubMining', 'fcharte')</code>. You can also fork this repo and introduce your own changes.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>This application allows you to access the GitHub API to get data about users, repositories, contributions, etc.</p>
+<p>Use the buttons at the top of the page to access the sections of the application.</p>
+</div>
+<div id="rate-limits-accessing-github-api" class="section level2">
+<h2>Rate limits accessing GitHub API</h2>
+<p>GitHub limits the number of calls a user can send to its API. Use the <strong>Update</strong> button, located in the left panel, to see your current limits.</p>
+<p>More restrictive limits are applied to anonymous users than to authenticated users. So, to extend de number of calls you can make please introduce your GitHub user name and password. These credentials will be used only for accessing the GitHub API, they are not sent anywhere.</p>
+</div>
 </div>
 
 
