@@ -41,11 +41,9 @@ shinyServer(function(input, output) {
 
         url <- paste("https://api.github.com/search/users?q=+location:", input$location, "&per_page=100", sep = "")
         data <- request(url, input$user, input$password)
-        df <- as.data.frame(t(sapply(data$items, rbind)))
-        names(df) <- names(data$items[[1]])
-        df[, c(1, 5, 16)]
+        do.call(rbind, lapply(data$items, function(row) data.frame(row$login, row$html_url, row$type, stringsAsFactors = F)))
       })
-      output$users <- renderTable(users)
+      output$users <- renderDataTable(users)
   })
 
 })

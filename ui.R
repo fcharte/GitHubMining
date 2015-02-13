@@ -31,7 +31,7 @@ shinyUI(fluidPage(
                       textInput("location", "Location"),
                       actionButton("search", "Search")
                     ), hr(),
-                    tableOutput("users")
+                    dataTableOutput("users")
                   ))
       )
     )
