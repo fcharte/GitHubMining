@@ -31,6 +31,8 @@ shinyServer(function(input, output) {
   })
 
   output$Rinfo <- renderTable({
-    data.frame(unlist(version))
+    df <- data.frame(unlist(version))
+    names(df) <- c("Value")
+    df
   })
 })
