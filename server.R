@@ -2,20 +2,18 @@ library(shiny)
 library(jsonlite)
 library(httr)
 
-shinyServer(function(input, output) {
-  request <- function(url, user, password) {
-    if(user != "" && password != "")
-      GET(url, authenticate(user, password, type = 'basic'))
-    else
-      GET(url)
-  }
+request <- function(url, user, password) {
+  if(user != "" && password != "")
+    content(GET(url, authenticate(user, password, type = 'basic')))
+  else
+    content(GET(url))
+}
 
+shinyServer(function(input, output) {
   observe({
     if(input$update != 0) isolate({
-      user <- input$user
-      password <- input$password
       limits <- reactive({
-        limits <- fromJSON(content(request("https://api.github.com/rate_limit", user, password), "text"))
+        limits <- request("https://api.github.com/rate_limit", input$user, input$password)
         df <- data.frame(
           Limit     = c(limits$resources$core$limit, limits$resources$search$limit),
           Remaining = c(limits$resources$core$remaining, limits$resources$search$remaining),
@@ -35,4 +33,19 @@ shinyServer(function(input, output) {
     names(df) <- c("Value")
     df
   })
+
+  observe({
+    if(input$search != 0) isolate({
+      users <- reactive({
+        if(input$location == "") return()
+
+        url <- paste("https://api.github.com/search/users?q=+location:", input$location, "&per_page=100", sep = "")
+        data <- request(url, input$user, input$password)
+        data.frame(data$items)
+      })
+
+      output$users <- renderTable(users())
+    })
+  })
+
 })

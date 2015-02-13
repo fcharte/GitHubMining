@@ -25,7 +25,14 @@ shinyUI(fluidPage(
                       " button, at the left, to see your current limits."),
                     p("More restrictive limits are applied to anonymous users than to authenticated users. So, to extend de number of calls you can make please introduce your GitHub user name and password. These credentials will be used only for accessing the GitHub API, they are not sent anywhere.")
                     )),
-                  tabPanel("R Info", fluidPage(tableOutput("Rinfo")))
+                  tabPanel("R Info", fluidPage(tableOutput("Rinfo"))),
+                  tabPanel("Users", fluidPage(
+                    inputPanel(
+                      textInput("location", "Location"),
+                      actionButton("search", "Search")
+                    ), hr(),
+                    tableOutput("users")
+                  ))
       )
     )
   )
