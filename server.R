@@ -39,7 +39,7 @@ shinyServer(function(input, output) {
     users <- isolate({
         if(input$location == "") return()
 
-        url <- paste("https://api.github.com/search/users?q=location:", URLencode(iconv(input$location, "latin1", "UTF-8")), sep = "")
+        url <- paste("https://api.github.com/search/users?q=location:", URLencode(iconv(input$location, localeToCharset(), "UTF-8")), "&per_page=100", sep = "")
         cat(url)
         data <- request(url, input$user, input$password)
         do.call(rbind, lapply(data$items, function(row) data.frame(row$login, row$html_url, row$type, stringsAsFactors = F)))
