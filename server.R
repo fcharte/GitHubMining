@@ -44,7 +44,7 @@ shinyServer(function(input, output) {
         data <- request(url, input$user, input$password)
         do.call(rbind, lapply(data$items, function(row) data.frame(row$login, row$html_url, row$type, stringsAsFactors = F)))
       })
-      output$users <- renderDataTable(users)
+      output$users <- renderDataTable(users, options = list(pageLength = 100))
   })
 
 })
