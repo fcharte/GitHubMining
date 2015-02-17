@@ -41,14 +41,16 @@ shinyServer(function(input, output) {
 
         url <- paste("https://api.github.com/search/users?q=location:", URLencode(iconv(input$location, localeToCharset(), "UTF-8")), "&per_page=1", sep = "")
         data <- request(url, input$user, input$password)
-        pages <- floor(data$total_count / 100) + 1
-        logins <- unlist(
-          lapply(1:pages,
-                 function(aPage)
-                   lapply(request(paste(url, "00&page=", aPage, sep = ""), input$user, input$password)$items,
-                          function(row) row$login)
-                   )
-        )
+        withProgress(message = paste("Fetching", data$total_count, "users"), value = 0, {
+          pages <- floor(data$total_count / 100) + 1
+          logins <- unlist(
+            lapply(1:pages,
+                   function(aPage)
+                     lapply(request(paste(url, "00&page=", aPage, sep = ""), input$user, input$password)$items,
+                            function(row) row$login)
+                     )
+          )
+        })
         data.frame(logins)
       })
       output$users <- renderDataTable(users, options = list(pageLength = 100))
