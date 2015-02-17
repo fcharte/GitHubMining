@@ -39,10 +39,17 @@ shinyServer(function(input, output) {
     users <- isolate({
         if(input$location == "") return()
 
-        url <- paste("https://api.github.com/search/users?q=location:", URLencode(iconv(input$location, localeToCharset(), "UTF-8")), "&per_page=100", sep = "")
-        cat(url)
+        url <- paste("https://api.github.com/search/users?q=location:", URLencode(iconv(input$location, localeToCharset(), "UTF-8")), "&per_page=1", sep = "")
         data <- request(url, input$user, input$password)
-        do.call(rbind, lapply(data$items, function(row) data.frame(row$login, row$html_url, row$type, stringsAsFactors = F)))
+        pages <- floor(data$total_count / 100) + 1
+        logins <- unlist(
+          lapply(1:pages,
+                 function(aPage)
+                   lapply(request(paste(url, "00&page=", aPage, sep = ""), input$user, input$password)$items,
+                          function(row) row$login)
+                   )
+        )
+        data.frame(logins)
       })
       output$users <- renderDataTable(users, options = list(pageLength = 100))
   })
