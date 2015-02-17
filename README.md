@@ -4,6 +4,8 @@ A shiny tool for mining GitHub data
 
 You can run this application from your R console or RStudio by installing the `shiny` package and then entering `runGitHub('GitHubMining', 'fcharte')`. You can also fork this repo and introduce your own changes.
 
+**Important**: This is a work in progress. I'll do changes at any time as I complete its functionality.
+
 ## Introduction
 
 This application allows you to access the GitHub API to get data about users, repositories, contributions, etc.
