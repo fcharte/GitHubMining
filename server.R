@@ -60,18 +60,18 @@ shinyServer(function(input, output) {
         })
         dfallusers <- do.call(rbind, lapply(allusers.data,  function(row)
           data.frame(
-            Login = row$login,
-            URL   = row$html_url,
+            Login = paste("<a href='", row$html_url, "'>", row$login, "</a>", sep = ""),
             Name  = empstr(row$name),
             Repos = as.numeric(row$public_repos),
             Followers = as.numeric(row$followers),
             Following = as.numeric(row$following),
-            Registered = empstr(row$created_at),
-            LastUpdate = empstr(row$updated_at))))
+            Registered = as.Date(empstr(row$created_at)),
+            LastUpdate = as.Date(empstr(row$updated_at)))
+        ))
       })
       data.frame(dfallusers)
     })
-    output$users <- renderDataTable(users, options = list(pageLength = 100))
+    output$users <- renderDataTable(users, options = list(pageLength = 100), escape = FALSE)
   })
 
 })
