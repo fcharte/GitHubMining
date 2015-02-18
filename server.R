@@ -9,6 +9,8 @@ request <- function(url, user, password) {
     content(GET(url))
 }
 
+empstr <- function(value) if(length(value) > 0) value else "-"
+
 shinyServer(function(input, output) {
   observe({
     if(input$update != 0) isolate({
@@ -37,23 +39,39 @@ shinyServer(function(input, output) {
   observe({
     input$search
     users <- isolate({
-        if(input$location == "") return()
+      if(input$location == "") return()
 
-        url <- paste("https://api.github.com/search/users?q=location:", URLencode(iconv(input$location, localeToCharset(), "UTF-8")), "&per_page=1", sep = "")
-        data <- request(url, input$user, input$password)
-        withProgress(message = paste("Fetching", data$total_count, "users"), value = 0, {
-          pages <- floor(data$total_count / 100) + 1
-          logins <- unlist(
-            lapply(1:pages,
-                   function(aPage)
-                     lapply(request(paste(url, "00&page=", aPage, sep = ""), input$user, input$password)$items,
-                            function(row) row$login)
-                     )
+      url <- paste("https://api.github.com/search/users?q=location:", URLencode(iconv(input$location, localeToCharset(), "UTF-8")), "&per_page=1", sep = "")
+      data <- request(url, input$user, input$password)
+      withProgress(message = paste("Fetching", data$total_count, "users"), value = 0, {
+        pages <- floor(data$total_count / 100) + 1
+        logins <- unlist(
+          lapply(1:pages,
+                 function(aPage)
+                   lapply(request(paste(url, "00&page=", aPage, sep = ""), input$user, input$password)$items,
+                          function(row) row$login
+                   )
           )
+        )
+        allusers.data <- lapply(logins, function(login) {
+          response <- request(paste("https://api.github.com/users/", URLencode(iconv(login, localeToCharset(), "UTF-8")), sep = ""), input$user, input$password)
+          incProgress(1 / length(logins))
+          response
         })
-        data.frame(logins)
+        dfallusers <- do.call(rbind, lapply(allusers.data,  function(row)
+          data.frame(
+            Login = row$login,
+            URL   = row$html_url,
+            Name  = empstr(row$name),
+            Repos = as.numeric(row$public_repos),
+            Followers = as.numeric(row$followers),
+            Following = as.numeric(row$following),
+            Registered = empstr(row$created_at),
+            LastUpdate = empstr(row$updated_at))))
       })
-      output$users <- renderDataTable(users, options = list(pageLength = 100))
+      data.frame(dfallusers)
+    })
+    output$users <- renderDataTable(users, options = list(pageLength = 100))
   })
 
 })
