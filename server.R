@@ -54,7 +54,13 @@ shinyServer(function(input, output) {
           )
         )
         allusers.data <- lapply(logins, function(login) {
-          response <- request(paste("https://api.github.com/users/", URLencode(iconv(login, localeToCharset(), "UTF-8")), sep = ""), input$user, input$password)
+          response <- request(paste("https://api.github.com/users/", login, sep = ""), input$user, input$password)
+          repos <- request(paste("https://api.github.com/users/", login, "/repos", sep = ""), input$user, input$password)
+          repos <- sapply(repos, function(repo) repo$name)
+          contribs <- sum(unlist(sapply(repos, function(repo)
+            sapply(request(paste("https://api.github.com/repos/", login, "/", repo, "/contributors", sep = ""), input$user, input$password), function(user)
+              if(user$login == login) user$contributions else 0))))
+          response$contribs <- contribs
           incProgress(1 / length(logins))
           response
         })
@@ -63,6 +69,7 @@ shinyServer(function(input, output) {
             Login = paste("<a href='", row$html_url, "'>", row$login, "</a>", sep = ""),
             Name  = empstr(row$name),
             Repos = as.numeric(row$public_repos),
+            Contribs = as.numeric(row$contribs),
             Followers = as.numeric(row$followers),
             Following = as.numeric(row$following),
             Registered = as.Date(empstr(row$created_at)),
