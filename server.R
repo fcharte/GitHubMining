@@ -80,5 +80,4 @@ shinyServer(function(input, output) {
     })
     output$users <- renderDataTable(users, options = list(pageLength = 100), escape = FALSE)
   })
-
 })

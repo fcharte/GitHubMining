@@ -24,14 +24,19 @@ shinyUI(fluidPage(
                     p("GitHub limits the number of calls a user can send to its API. Use the ", strong("Update"),
                       " button, at the left, to see your current limits."),
                     p("More restrictive limits are applied to anonymous users than to authenticated users. So, to extend de number of calls you can make please introduce your GitHub user name and password. These credentials will be used only for accessing the GitHub API, they are not sent anywhere.")
-                    )),
+                  )),
                   tabPanel("R Info", fluidPage(tableOutput("Rinfo"))),
                   tabPanel("Users", fluidPage(
                     inputPanel(
                       textInput("location", "Location"),
                       actionButton("search", "Search")
                     ), hr(),
-                    dataTableOutput("users")
+                    dataTableOutput("users"),
+                    fluidPage(
+                      h3("User search", style="color:blue"),
+                      p("Introduce a location (it can be a city name or a country name) to search the GitHub users which have it in their profiles."),
+                      p("This function will obtain all the repositories for each user to get the sum of contributions they have made, so it will take some time.")
+                    )
                   ))
       )
     )
