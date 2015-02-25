@@ -57,10 +57,13 @@ shinyServer(function(input, output) {
           response <- request(paste("https://api.github.com/users/", login, sep = ""), input$user, input$password)
           repos <- request(paste("https://api.github.com/users/", login, "/repos", sep = ""), input$user, input$password)
           repos <- sapply(repos, function(repo) repo$name)
-          contribs <- sum(unlist(sapply(repos, function(repo)
-            sapply(request(paste("https://api.github.com/repos/", login, "/", repo, "/contributors", sep = ""), input$user, input$password), function(user)
-              if(user$login == login) user$contributions else 0))))
-          response$contribs <- contribs
+          if(input$contributions == TRUE) {
+            contribs <- sum(unlist(sapply(repos, function(repo)
+              sapply(request(paste("https://api.github.com/repos/", login, "/", repo, "/contributors", sep = ""), input$user, input$password), function(user)
+                if(user$login == login) user$contributions else 0))))
+            response$contribs <- contribs
+          } else
+            response$contribs <- "-"
           incProgress(1 / length(logins))
           response
         })

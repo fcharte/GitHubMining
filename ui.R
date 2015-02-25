@@ -29,6 +29,7 @@ shinyUI(fluidPage(
                   tabPanel("Users", fluidPage(
                     inputPanel(
                       textInput("location", "Location"),
+                      checkboxInput("contributions", "Count contributions", TRUE),
                       actionButton("search", "Search")
                     ), hr(),
                     dataTableOutput("users"),
